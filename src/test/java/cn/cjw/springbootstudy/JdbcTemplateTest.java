@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.cjw.springbootstudy.model.User;
 import cn.cjw.springbootstudy.service.UserService;
@@ -18,6 +19,7 @@ public class JdbcTemplateTest {
 	@Autowired
 	private UserService userService;
 	
+	@Transactional
 	@Test
 	public void test() {
 		User user = new User();
@@ -27,5 +29,10 @@ public class JdbcTemplateTest {
 		
 		List<User> list = userService.getAllUser();
 		list.stream().forEach(u -> System.out.println(u.getId() + "=" + u.getName() + "," + u.getAge()));
+		
+		user = new User();
+		user.setName("no name");
+		//age is null, create will be rollback
+		userService.createUser(user);
 	}
 }
