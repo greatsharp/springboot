@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import cn.cjw.springbootstudy.model.User;
 import cn.cjw.springbootstudy.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@CacheConfig(cacheNames = "users")
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -40,10 +45,12 @@ public class UserServiceImpl implements UserService {
 		return null;
 	}
 
+	@Cacheable
 	@Override
 	public List<User> getAllUser() {
 		List<User> result = new ArrayList<User>();
 		String sql = "select id, name, age from user order by id";
+		log.warn(sql);
 		result = jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
 //		result = jdbcTemplate.query(sql, new RowMapper<User>() {
 //
