@@ -34,12 +34,8 @@ public class JdbcTemplateTest {
 		
 		List<User> list = userService.getAllUser();
 		list.stream().forEach(u -> System.out.println(u.getId() + "=" + u.getName() + "," + u.getAge()));
-		userCache.put("userList", list);
 		
 		list = userService.getAllUser();
-		list.stream().forEach(u -> System.out.println(u.getId() + "=" + u.getName() + "," + u.getAge()));
-		
-		list = (List<User>)(userCache.get("userList"));
 		list.stream().forEach(u -> System.out.println(u.getId() + "=" + u.getName() + "," + u.getAge()));
 	}
 	
