@@ -1,0 +1,96 @@
+curl -X PUT "localhost:9200/cars/?pretty" -H 'Content-Type: application/json' -d'
+{
+    "mappings" : { 
+        "transactions" : { 
+            "properties" : { 
+              "price": {
+                "type": "long"
+              },
+              "color": {
+                "type": "keyword"
+              },
+              "make": {
+                "type": "keyword"
+              },
+              "sold": {
+                "type": "date"
+              }
+            }
+        }
+    }
+}
+'
+
+curl -X POST "localhost:9200/cars/transactions/_bulk?pretty" -H 'Content-Type: application/json' -d'
+{ "index": {"_id":1}}
+{ "price" : 10000, "color" : "red", "make" : "honda", "sold" : "2014-10-28" }
+{ "index": {"_id":2}}
+{ "price" : 20000, "color" : "red", "make" : "honda", "sold" : "2014-11-05" }
+{ "index": {"_id":3}}
+{ "price" : 30000, "color" : "green", "make" : "ford", "sold" : "2014-05-18" }
+{ "index": {"_id":4}}
+{ "price" : 15000, "color" : "blue", "make" : "toyota", "sold" : "2014-07-02" }
+{ "index": {"_id":5}}
+{ "price" : 12000, "color" : "green", "make" : "toyota", "sold" : "2014-08-19" }
+{ "index": {"_id":6}}
+{ "price" : 20000, "color" : "red", "make" : "honda", "sold" : "2014-11-05" }
+{ "index": {"_id":7}}
+{ "price" : 80000, "color" : "red", "make" : "bmw", "sold" : "2014-01-01" }
+{ "index": {"_id":8}}
+{ "price" : 25000, "color" : "blue", "make" : "ford", "sold" : "2014-02-12" }
+'
+
+
+curl -X GET "localhost:9200/cars/transactions/_search?pretty" -H 'Content-Type: application/json' -d'
+{
+    "size" : 0,
+    "aggs" : { 
+        "popular_colors" : { 
+            "terms" : { 
+              "field" : "color"
+            },
+            "aggs": {
+              "madeby": {
+                "terms" : {
+                  "field": "make"
+                },
+                "aggs": {
+                  "avg_price" : {
+                      "avg": {
+                        "field" : "price"
+                      }
+                  }
+                }
+              }
+            }
+        },
+        "avg_price" : {
+            "avg": {
+              "field" : "price"
+            }
+        }
+    }
+}
+'
+
+
+curl -X GET "localhost:9200/cars/transactions/_search?pretty" -H 'Content-Type: application/json' -d'
+{
+   "size" : 0,
+   "aggs":{
+      "price":{
+         "histogram":{ 
+            "field": "price",
+            "interval": 20000
+         },
+         "aggs":{
+            "revenue": {
+               "sum": { 
+                 "field" : "price"
+               }
+             }
+         }
+      }
+   }
+}
+'
